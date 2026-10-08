@@ -1,151 +1,194 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENGINE PRO - Workshop System Integration</title>
-    <style>
-        /* Menghilangkan margin bawaan browser dan mengunci ukuran layar */
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #f8fafc;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ULTRABOARD - BAROKAH OTO SERVICE</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        /* Pembungkus iframe agar responsif dan penuh layar */
-        .iframe-container {
-            width: 100%;
-            height: 100%;
-            border: none;
-            position: relative;
-            z-index: 10;
-        }
+    body, html {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: #0b0f19;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
+    /* Target Full Layer Iframe */
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      z-index: 1;
+    }
 
-        /* Overlay Indikator Koneksi / Memuat Ulang */
-        .loading-koneksi-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(4px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .loading-koneksi-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+    /* Luxury Glassmorphism Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 99;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
 
-        /* Spinner Animasi */
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #e2e8f0;
-            border-bottom-color: #1E3A8A;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
+    .loading-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
 
-        /* Teks Status Sesuai Request */
-        .status-text {
-            font-size: 14px;
-            font-weight: 800;
-            color: #1E3A8A;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
-        }
+    /* Multi-Color Concentric Neon Spinner */
+    .spinner-box {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      margin-bottom: 28px;
+    }
 
-        .sub-status-text {
-            font-size: 11px;
-            font-weight: 600;
-            color: #ef4444;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 8px;
-            text-align: center;
-            animation: pulse 1.5s infinite;
-        }
+    .spinner-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 3px solid transparent;
+      border-top-color: #00f2fe; /* Cyan Neon */
+      border-right-color: #4facfe;
+      border-radius: 50%;
+      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.6));
+    }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+    .spinner-ring:nth-child(2) {
+      width: 75%;
+      height: 75%;
+      top: 12.5%;
+      left: 12.5%;
+      border-top-color: #f093fb; /* Magenta Neon */
+      border-right-color: #f5576c;
+      animation: spin-reverse 0.9s linear infinite;
+      filter: drop-shadow(0 0 8px rgba(240, 147, 251, 0.6));
+    }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-    </style>
+    .spinner-ring:nth-child(3) {
+      width: 50%;
+      height: 50%;
+      top: 25%;
+      left: 25%;
+      border-top-color: #43e97b; /* Emerald / Gold Neon */
+      border-right-color: #38f9d7;
+      animation: spin 1.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 8px rgba(67, 233, 123, 0.6));
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes spin-reverse {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(-360deg); }
+    }
+
+    /* Dynamic Luxury Text Styling */
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: #ffffff;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .loading-text {
+      color: #38bdf8;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      min-height: 24px;
+      text-align: center;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .loading-text.fade-out {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Overlay Status Pemuatan Jaringan ENGINE PRO -->
-    <div id="connection-overlay" class="loading-koneksi-overlay">
-        <div class="spinner"></div>
-        <div class="status-text">Memuat ENGINE PRO...</div>
-        <div id="sub-text" class="sub-status-text">Refresh jika koneksi terputus</div>
+  <!-- Overlay Loader Berwarna-Warni & Mewah -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner-box">
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring"></div>
     </div>
+    <div class="brand-title">ULTRABOARD</div>
+    <div id="dynamicText" class="loading-text">Menyiapkan Aplikasi...</div>
+  </div>
 
-    <div class="iframe-container">
-        <!-- Iframe Utama ENGINE PRO -->
-        <iframe 
-            id="engine-pro-iframe"
-            src="https://script.google.com/macros/s/AKfycbyJXN6nsNWvYchS_NUxffFo9sq5z4hm2ikktsLs07VMaeEDd2Lg0Owg9QMqFtrPOZqx9g/exec" 
-            title="Carboard Servis Dashboard Overview"
-            allow="geolocation; microphone; camera; midi; encrypted-media;"
-            loading="lazy">
-        </iframe>
-    </div>
+  <!-- Google Apps Script Iframe -->
+  <iframe 
+    id="appIframe"
+    src="https://script.google.com/macros/s/AKfycbx5CN81AQJkw2dZDN0lEl0VaDGBNAltgZSeeAclSDQpizySZOCYgY92kNaO8JHTE2x0EQ/exec"
+    allow="fullscreen">
+  </iframe>
 
-    <script>
-        const iframe = document.getElementById('engine-pro-iframe');
-        const overlay = document.getElementById('connection-overlay');
-        const subText = document.getElementById('sub-text');
+  <script>
+    // Teks Pergantian Status Memuat
+    const statusTexts = [
+      "Menyiapkan Aplikasi...",
+      "Memuat Barokah Oto Service...",
+      "Sinkronisasi Data Realtime...",
+      "Hampir Selesai...",
+      "Tunggu Sebentar..."
+    ];
 
-        // 1. Deteksi saat internet terputus (Offline)
-        window.addEventListener('offline', () => {
-            console.warn('Koneksi terputus!');
-            subText.innerText = "Koneksi Terputus! Hubungkan internet kembali";
-            overlay.classList.add('active');
-        });
+    let currentTextIdx = 0;
+    const textElement = document.getElementById("dynamicText");
+    const overlayElement = document.getElementById("loadingOverlay");
+    const iframeElement = document.getElementById("appIframe");
 
-        // 2. Deteksi saat internet terhubung kembali (Online) -> Auto-Refresh & Tampilkan Teks Pemuatan
-        window.addEventListener('online', () => {
-            console.log('Koneksi online kembali. Memuat ulang...');
-            subText.innerText = "Refresh jika koneksi terputus";
-            overlay.classList.add('active');
-            
-            if (iframe) {
-                // Refresh src iframe secara background
-                iframe.src = iframe.src;
-            }
-        });
+    // Efek Teks Berganti Tiap 1.5 Detik
+    const textInterval = setInterval(() => {
+      textElement.classList.add("fade-out");
+      setTimeout(() => {
+        currentTextIdx = (currentTextIdx + 1) % statusTexts.length;
+        textElement.innerText = statusTexts[currentTextIdx];
+        textElement.classList.remove("fade-out");
+      }, 250);
+    }, 1500);
 
-        // 3. Sembunyikan layar memuat/loading setelah iframe sukses ter-load sempurna
-        if (iframe) {
-            iframe.addEventListener('load', () => {
-                overlay.classList.remove('active');
-            });
-        }
-    </script>
+    // Hilangkan Loader Setelah Iframe Selesai Memuat
+    iframeElement.onload = function() {
+      setTimeout(() => {
+        clearInterval(textInterval);
+        overlayElement.classList.add("hidden");
+      }, 600);
+    };
+
+    // Safety Timeout (Maksimal 8 Detik Otomatis Terbuka)
+    setTimeout(() => {
+      clearInterval(textInterval);
+      overlayElement.classList.add("hidden");
+    }, 8000);
+  </script>
+
 </body>
 </html>
